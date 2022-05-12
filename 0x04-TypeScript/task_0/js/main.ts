@@ -1,13 +1,23 @@
 interface Student {
-  firstName: string, 
-  lastName: string, 
-  age: number, 
-  location: string
+  firstName: string;
+  lastName: string;
+  age: number;
+  location: string;
 }
 
-const StudentsList = (student1: Student, student2: Student) => {
-  return [
-    { student1 },
-    { student2 }
-  ]
+const student1: Student = {
+  firstName: 'Dave',
+  lastName: 'Davington',
+  age: 10,
+  location: 'OKC',
 }
+
+const student2: Student = {
+  firstName: 'Zugus',
+  lastName: 'Dugus',
+  age: 12,
+  location: 'San Diego',
+}
+
+const studentsList: Array<Student> = [student1, student2];
+console.log(studentsList);
