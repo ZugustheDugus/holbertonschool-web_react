@@ -19,5 +19,14 @@ const student2: Student = {
   location: 'San Diego',
 }
 
-const studentsList: Array<Student> = [student1, student2];
-console.log(studentsList);
+const studentList: Array<Student> = [student1, student2];
+
+const table = document.createElement('table');
+
+for (const student of studentList) {
+    const row = table.insertRow();
+    row.insertCell().innerHTML = student.firstName;
+    row.insertCell().innerHTML = student.location;
+}
+
+document.body.appendChild(table);
