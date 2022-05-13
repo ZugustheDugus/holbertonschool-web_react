@@ -9,8 +9,8 @@ export const java: Subjects.Java = new Subjects.Java();
 export const react: Subjects.React = new Subjects.React();
 
 export const cTeacher: Subjects.Teacher = {
-    firstName: 'Willy',
-    lastName: 'Wonka',
+    firstName: 'Paul',
+    lastName: 'Harrel',
     experienceTeachingC: 2300,
 }
 

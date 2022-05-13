@@ -9,8 +9,8 @@ exports.cpp = new Subjects.Cpp();
 exports.java = new Subjects.Java();
 exports.react = new Subjects.React();
 exports.cTeacher = {
-    firstName: 'Willy',
-    lastName: 'Wonka',
+    firstName: 'Paul',
+    lastName: 'Harrel',
     experienceTeachingC: 2300
 };
 console.log('C++');
