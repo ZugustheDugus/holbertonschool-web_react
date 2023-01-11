@@ -1,7 +1,7 @@
 import Notifications from './Notifications';
 import { shallow } from 'enzyme';
 
-describe('notify', () => {
+describe('Notifications', () => {
   it('renders without crashing', () => {
     const wrapper = shallow(<Notifications />);
     expect(wrapper.exists()).toBe(true);
