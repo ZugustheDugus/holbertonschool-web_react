@@ -10,7 +10,7 @@ function clickLog() {
   console.log('Close button has been clicked');
 }
 
-class Notifications extends React.Component {
+class Notifications extends React.PureComponent {
   constructor(props) {
     super(props);
     this.listNot = [];
@@ -28,6 +28,12 @@ class Notifications extends React.Component {
         id={this.props.listNotifications[i].id}
         />)
     }
+  }
+
+  shouldComponentUpdate(newProps) {
+    return (
+      newProps.listNotifications.length > this.props.listNotifications.length
+    )
   }
 
   markAsRead(id) {

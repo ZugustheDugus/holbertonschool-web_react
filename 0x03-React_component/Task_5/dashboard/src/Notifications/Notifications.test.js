@@ -4,7 +4,7 @@ import React from 'react';
 import {expect, jest, test} from '@jest/globals';
 
 
-const listNotifications = [
+let listNotifications = [
   {
   value: 'Someone wants to connect!',
   id: 0,
@@ -24,6 +24,23 @@ const listNotifications = [
 ]
 
 describe('<Notifications />', () => {
+  let listNotifications = [{
+    value: 'Someone wants to connect!',
+    id: 0,
+    type: 'default',
+    },
+    {
+    value: 'Employer wants to reach out',
+    id: 1,
+    type: 'urgent',
+    },
+    {
+    value: '',
+    id: 2,
+    type: 'urgent',
+    html: {__html: 'This is a string'}
+    }
+  ]
   it("renders without crashing", () => {
     shallow(<Notifications />);
   });
@@ -51,7 +68,7 @@ describe('<Notifications />', () => {
 });
 
 describe('<Notifications /> when given a list of notifications', () => {
-  const listNotifications = [
+  let listNotifications = [
     {
     value: 'Someone wants to connect!',
     id: 0,
@@ -67,8 +84,8 @@ describe('<Notifications /> when given a list of notifications', () => {
     id: 2,
     type: 'urgent',
     html: {__html: 'This is a string'}
-  },
-]
+    },
+  ]
 const SComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
 
   it("Displays div.Notifications when display drawer is true", () => {
@@ -86,5 +103,52 @@ describe('<Notifications /> when given a list of notifications and markAsRead fu
     const SNotifications = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />).instance();
     SNotifications.markAsRead(1);
     expect(console.log).toHaveBeenCalledWith('Notification 1 has been marked as read')
+  });
+});
+
+describe('<Notifications /> updates when given a list bigger than original', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it("should not render with list same size", () => {
+    let listNotifications = [
+    {
+      value: 'Someone wants to connect!',
+      id: 0,
+      type: 'default',
+      }
+  ]
+    const SNotifications = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
+    const shouldComponentUpdateSpy = jest.spyOn(Notifications.prototype, 'shouldComponentUpdate');
+    SNotifications.setProps({ listNotifications: listNotifications });
+    expect(shouldComponentUpdateSpy).toHaveBeenCalled();
+    expect(shouldComponentUpdateSpy).toHaveLastReturnedWith(false);
+  });
+  it("should rerender with list bigger", () => {
+    let listNotifications = [
+    {
+      value: 'Someone wants to connect!',
+      id: 0,
+      type: 'default',
+      }
+  ]
+    const SNotifications = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
+    const shouldComponentUpdateSpy = jest.spyOn(Notifications.prototype, 'shouldComponentUpdate');
+    listNotifications = [
+      {
+        value: 'Someone wants to connect!',
+        id: 0,
+        type: 'default',
+      },
+      {
+        value: 'Resume available!',
+        id: 1,
+        type: 'urgent',
+      }
+    ]
+    SNotifications.setProps({ listNotifications: listNotifications });
+    expect(shouldComponentUpdateSpy).toHaveBeenCalled();
+    expect(shouldComponentUpdateSpy).toHaveLastReturnedWith(true);
   });
 });
