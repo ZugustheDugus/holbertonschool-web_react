@@ -1,0 +1,1 @@
+React Component project for Holberton School by Hayden M. Cooper
