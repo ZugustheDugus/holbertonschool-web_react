@@ -1,0 +1,1 @@
+React inline styling project for Holberton School by Hayden M. Cooper
