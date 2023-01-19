@@ -2,28 +2,18 @@ import { shallow } from 'enzyme';
 import Notifications from './Notifications.js';
 import React from 'react';
 import {expect, jest, test} from '@jest/globals';
+import { StyleSheetTestUtils } from 'aphrodite';
 
 
-let listNotifications = [
-  {
-  value: 'Someone wants to connect!',
-  id: 0,
-  type: 'default',
-  },
-  {
-  value: 'Employer wants to reach out',
-  id: 1,
-  type: 'urgent',
-  },
-  {
-  value: '',
-  id: 2,
-  type: 'urgent',
-  html: {__html: 'This is a string'}
-  },
-]
+
 
 describe('<Notifications />', () => {
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
+  afterEach(() => {
+    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+  });
   let listNotifications = [{
     value: 'Someone wants to connect!',
     id: 0,
@@ -45,29 +35,35 @@ describe('<Notifications />', () => {
     shallow(<Notifications />);
   });
   it("Notification renders 3 NotificationItems when given list", () => {
-    const notificationsComponent = shallow(<Notifications listNotifications={listNotifications} />);
+    const notificationsComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
     expect(notificationsComponent.find('NotificationItem').length).toEqual(3);
   });
   it("Notification renders a correct header text", () => {
-    const SComponent = shallow(<Notifications />);
-    expect(SComponent.contains('Here is the list of notifications')).toEqual(true);
+    const SComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications}/>);
+    expect(SComponent.find('div p').text()).toEqual('Here is the list of notifications');
   });
   it("Notification renders menuItem div", () => {
     const SComponent = shallow(<Notifications />);
-    expect(SComponent.find('.menuItem').length).toEqual(1);
+    expect(SComponent.find('div').first().text()).toEqual('Your notifications');
   });
   it("Does not display div.Notifications when display drawer is false", () => {
     const SComponent = shallow(<Notifications />);
-    expect(SComponent.find('.Notifications').props()['style']).toEqual({display: "none"});
+    expect(SComponent.find('div p').length).toEqual(0);
   });
   it("Displays div.Notifications when display drawer is true", () => {
     const SComponent = shallow(<Notifications displayDrawer={true} />);
-    expect(SComponent.find('.Notifications').props()['style']).toEqual({display: "block"});
+    expect(SComponent.find('div p').length).toEqual(1);
   });
 
 });
 
 describe('<Notifications /> when given a list of notifications', () => {
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
+  afterEach(() => {
+    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+  });
   let listNotifications = [
     {
     value: 'Someone wants to connect!',
@@ -94,9 +90,31 @@ const SComponent = shallow(<Notifications displayDrawer={true} listNotifications
 });
 
 describe('<Notifications /> when given a list of notifications and markAsRead function', () => {
+  let listNotifications = [
+    {
+    value: 'Someone wants to connect!',
+    id: 0,
+    type: 'default',
+    },
+    {
+    value: 'Employer wants to reach out',
+    id: 1,
+    type: 'urgent',
+    },
+    {
+    value: '',
+    id: 2,
+    type: 'urgent',
+    html: {__html: 'This is a string'}
+    },
+  ]
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
   afterEach(() => {
-    jest.resetAllMocks()
-  })
+    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+    jest.restoreAllMocks()
+  });
 
   it("The correct console.log message i written when markAsRead is called", () => {
     console.log = jest.fn();
@@ -107,9 +125,13 @@ describe('<Notifications /> when given a list of notifications and markAsRead fu
 });
 
 describe('<Notifications /> updates when given a list bigger than original', () => {
+  beforeEach(() => {
+    StyleSheetTestUtils.suppressStyleInjection();
+  });
   afterEach(() => {
+    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
     jest.restoreAllMocks()
-  })
+  });
 
   it("should not render with list same size", () => {
     let listNotifications = [
