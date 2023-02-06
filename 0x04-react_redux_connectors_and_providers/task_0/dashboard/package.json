@@ -38,10 +38,11 @@
 	"dependencies": {
 		"aphrodite": "^2.4.0",
 		"enzyme-adapter-react-16": "^1.15.6",
+		"immutable": "^4.2.2",
+		"normalizr": "^3.6.1",
 		"prop-types": "^15.8.1",
 		"react": "^16.13.0",
-		"react-dom": "^16.13.0",
-		"normalizr": "^3.6.1"
+		"react-dom": "^16.13.0"
 	},
 	"jest": {
 		"moduleNameMapper": {
