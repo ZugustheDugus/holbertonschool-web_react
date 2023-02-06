@@ -1,1 +1,1 @@
-React Redux Reducer Selector project for Holberton School by Hayden M. Cooper
+React redux connectors and providers project for Holberton School by Hayden M. Cooper
