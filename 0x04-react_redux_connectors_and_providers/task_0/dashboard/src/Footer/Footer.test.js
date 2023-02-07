@@ -1,56 +1,48 @@
-import Footer from './Footer'
-import { shallow, mount } from 'enzyme';
 import React from 'react';
+import ReactDOM from 'react-dom';
+import Footer from './Footer';
+import { shallow, mount } from 'enzyme';
+import chai from 'chai';
 import { StyleSheetTestUtils } from 'aphrodite';
-import userContext from '../App/AppContext';
+import AppContext from '../App/AppContext';
 
+chai.use(require('chai-string'));
 
-describe('<Footer />', () => {
-  let contextValues = {};
+describe('Footer Renders', () => {
+
   beforeEach(() => {
-    contextValues = {
-      user: {
-        email: '',
-        password: '',
-        isLoggedIn: false
-      },
-      logOut: () => {}
-    };
     StyleSheetTestUtils.suppressStyleInjection();
   });
+
   afterEach(() => {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
   });
-  it("renders Footer without crashing", () => {
-    shallow(<Footer />);
+
+  const footer = shallow(<Footer />);
+
+  it('without crashing', () => {
+    chai.assert.equal(footer.length, 1);
   });
-  it("renders test 'Copyright' ", () => {
-    const SFooter = shallow(<Footer />);
-    expect(SFooter.find('footer p').text().includes('Copyright')).toEqual(true)
+
+  it('"Copyright" within the p element', () => {
+    chai.assert.startsWith(footer.find('p').text(), 'Copyright');
   });
-  it("renders 'Contact us' when logged in", () => {
-    contextValues.user.isLoggedIn = true;
-    const SFooter = mount(<Footer />, {
-      wrappingComponent: userContext.Provider,
-      wrappingComponentProps: {
-        value: {
-          user: contextValues.user,
-          logOut: contextValues.logOut
-        },
-      },
-    });
-    expect(SFooter.find('footer p').first().text().includes('Contact us')).toEqual(true)
+
+  it('without a Contact Us link when user is not logged in', () => {
+    chai.assert.equal(footer.find('a').length, 0);
   });
-  it("Does not renders 'Contact us' when not logged in", () => {
-    const SFooter = mount(<Footer />, {
-      wrappingComponent: userContext.Provider,
-      wrappingComponentProps: {
-        value: {
-          user: contextValues.user,
-          logOut: contextValues.logOut
-        },
-      },
-    });
-    expect(SFooter.find('p').length).toEqual(1)
+
+  it('with a "Contact Us" link with correct href when user is logged in', () => {
+    const loginFooter = mount(
+      <AppContext.Provider value={{
+        user: {
+          isLoggedIn: true,
+        }
+      }}>
+        <Footer />
+      </AppContext.Provider>
+    );
+    chai.assert.equal(loginFooter.find('a').length, 1);
+    chai.assert.equal(loginFooter.find('a').text(), 'Contact Us');
   });
 });

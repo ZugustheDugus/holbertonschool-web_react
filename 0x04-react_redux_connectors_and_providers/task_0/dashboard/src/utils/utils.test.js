@@ -1,20 +1,29 @@
-const assert = require('assert');
-import { getLatestNotification, getFooterCopy, getFullYear } from './utils.js'
-describe('getFullYear', function () {
-  it('should return 2023!', function () {
-      assert.equal(getFullYear(), 2023);
+import { getFullYear, getFooterCopy, getLatestNotification } from './utils';
+import { assert } from 'chai';
+
+describe('Utils', () => {
+  describe('getFullYear', () => {
+    it('returns the current year', () => {
+      assert.equal(getFullYear(), new Date().getFullYear());
+    });
   });
-});
-describe('getLatestNotification', function () {
-  it('should return "<strong>Urgent requirement</strong> - complete by EOD"', function () {
-      assert.equal(getLatestNotification(), '<strong>Urgent requirement</strong> - complete by EOD');
+
+  describe('getFooterCopy', () => {
+    it('returns the right string when passing true', () => {
+      assert.equal(getFooterCopy(true), 'Holberton School');
+    });
+
+    it('returns the right string when passing false', () => {
+      assert.equal(getFooterCopy(false), 'Holberton School main dashboard');
+    });
   });
-});
-describe('getFooterCopy', function () {
-  it('true should return "Holberton School"', function () {
-      assert.equal(getFooterCopy(true), "Holberton School");
-  });
-  it('false should return "Holberton School main dashboard"', function () {
-      assert.equal(getFooterCopy(false), "Holberton School main dashboard");
+
+  describe('getLatestNotification', () => {
+    it('returns the right string', () => {
+      assert.equal(
+        getLatestNotification(),
+        '<strong>Urgent requirement</strong> - complete by EOD'
+      );
+    });
   });
 });

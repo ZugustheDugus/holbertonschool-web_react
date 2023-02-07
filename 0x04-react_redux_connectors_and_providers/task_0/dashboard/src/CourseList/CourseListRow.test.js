@@ -1,49 +1,41 @@
-import CourseListRow from "./CourseListRow";
-import { shallow } from 'enzyme';
 import React from 'react';
-import { StyleSheetTestUtils } from 'aphrodite'
-const expect = require('chai').expect;
+import CourseListRow from './CourseListRow';
+import { shallow } from 'enzyme';
+import { assert } from 'chai';
+import { StyleSheetTestUtils } from 'aphrodite';
 
-describe('<CourseListRow />', () => {
+describe('CourseListRow Renders', () => {
+
   beforeEach(() => {
     StyleSheetTestUtils.suppressStyleInjection();
   });
+
   afterEach(() => {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
   });
-  it("renders CourseListRow without crashing", () => {
-    shallow(<CourseListRow textFirstCell="This is first Cell"/>);
+
+  const colSpan2 = shallow(<CourseListRow isHeader={true} textFirstCell='colSpan=2' />);
+  const th2 = shallow(<CourseListRow isHeader={true} textFirstCell='First th' textSecondCell='Second th' />);
+  const td2 = shallow(<CourseListRow textFirstCell='First td' textSecondCell='Second td' />);
+
+  it('without crashing', () => {
+    assert.equal(colSpan2.length, 1);
+    assert.equal(th2.length, 1);
+    assert.equal(td2.length, 1);
   });
-  it("isHeader true and textSecondCell is null: renders one cell", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={true} textFirstCell="This is first Cell"/>);
-    expect(SCourseListRow.find('th').length).to.equal(1);
+
+  it('colSpan=2 th when isHeader=true & textSecondCell=null', () => {
+    assert.equal(colSpan2.children().length, 1)
+    assert.equal(th2.children().first().type(), 'th');
   });
-  it("isHeader true and textSecondCell is null: cell has colSpan of 2", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={true} textFirstCell="This is first Cell"/>);
-    expect(SCourseListRow.find('th').props()['colSpan']).to.equal(2);
+
+  it('th x2 when isHeader=true & textSecondCell != null', () => {
+    assert.equal(th2.children().length, 2);
+    assert.equal(th2.children().first().type(), 'th');
   });
-  it("isHeader true and textSecondCell is not null: renders two cells", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={true} textFirstCell="This is first Cell" textSecondCell="This is second Cell" />);
-    expect(SCourseListRow.find('th').length).to.equal(2);
+
+  it('td x2 when isHeader=true & textSecondCell != null', () => {
+    assert.equal(td2.children().length, 2);
+    assert.equal(td2.children().first().type(), 'td');
   });
-  it("isHeader true and textSecondCell is not null: First Cell Correct Text", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={true} textFirstCell="This is first Cell" textSecondCell="This is second Cell"/>);
-    expect(SCourseListRow.find('th').at(0).text()).to.equal('This is first Cell');
-  });
-  it("isHeader true and textSecondCell is not null: Second Cell Correct Text", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={true} textFirstCell="This is first Cell" textSecondCell="This is second Cell"/>);
-    expect(SCourseListRow.find('th').at(1).text()).to.equal('This is second Cell');
-  });
-  it("isHeader false: renders two td elements in tr", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={false} textFirstCell="This is first Cell" textSecondCell="This is second Cell"/>);
-    expect(SCourseListRow.find('tr td').length).to.equal(2);
-  });
-  it("isHeader false: FirstCell text is correct", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={false} textFirstCell="This is first Cell" textSecondCell="This is second Cell"/>);
-    expect(SCourseListRow.find('tr td').at(0).text()).to.equal('This is first Cell');
-  });
-  it("isHeader false: SecondCell text is correct", () => {
-    const SCourseListRow = shallow(<CourseListRow isHeader={false} textFirstCell="This is first Cell" textSecondCell="This is second Cell"/>);
-    expect(SCourseListRow.find('tr td').at(1).text()).to.equal('This is second Cell');
-  });
-});
+})

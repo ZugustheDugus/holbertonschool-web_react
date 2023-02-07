@@ -1,23 +1,30 @@
-import { shallow, mount } from 'enzyme';
 import React from 'react';
+import { mount } from 'enzyme';
 import WithLogging from './WithLogging';
+import Login from '../Login/Login';
+import { StyleSheetTestUtils } from 'aphrodite';
 
-describe('WithLogging HOC', () => {
+global.console.log = jest.fn()
+
+describe('WithLogging wraps component', () => {
+
   beforeEach(() => {
-    jest.restoreAllMocks();
-  })
-  it("console.log was called on mount", () => {
-    console.log = jest.fn();
-    const WrappedComponent = WithLogging(() => <div />);
-    const mountedWrapped = mount(<WrappedComponent />);
-    expect(console.log).toHaveBeenCalledWith('Component Component is mounted');
-    mountedWrapped.unmount();
+    StyleSheetTestUtils.suppressStyleInjection();
   });
-  it("console.log was called on unmount", () => {
-    console.log = jest.fn();
-    const WrappedComponent = WithLogging(() => <div />);
-    mount(<WrappedComponent />).unmount();
-    expect(console.log).toHaveBeenNthCalledWith(2, 'Component Component is going to unmount');
-    
+
+  afterEach(() => {
+    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+  });
+
+	const spy = jest.spyOn(console, 'log');
+  const wrapper = mount(< WithLogging Wrapped={<Login />} />);
+
+  it('to console.log message when mounted', () => {
+    expect(spy).toHaveBeenCalledWith('Component Login is mounted');
+  });
+
+  it('to console.log message when unmounted', () => {
+    wrapper.unmount();
+    expect(spy).toHaveBeenCalledWith('Component Login is going to unmount');
   });
 });
