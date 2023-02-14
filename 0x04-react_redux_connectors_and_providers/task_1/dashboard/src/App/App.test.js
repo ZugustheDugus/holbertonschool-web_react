@@ -1,13 +1,18 @@
 import { shallow, mount } from 'enzyme';
 import React from 'react';
-import App from './App';
+import { App } from './App';
 import sinon from 'sinon';
 import { StyleSheetTestUtils } from 'aphrodite';
+import { mapStateToProps } from './App';
+import { fromJS } from 'immutable';
+import { createStore } from "redux";
+import uiReducer, { initialState } from '../reducers/uiReducer';
 jest.useFakeTimers();
 
 
 window.alert = sinon.spy()
 
+const store = createStore(uiReducer, initialState);
 
 describe('<App />', () => {
   beforeEach(() => {
@@ -83,26 +88,19 @@ describe('Keydown event listener works as planned', () => {
 
 });
 
-describe('State is used and set correctly', () => {
+describe('App Redux', () => {
   beforeEach(() => {
     StyleSheetTestUtils.suppressStyleInjection();
   })
   afterEach(function() {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
   });
-  it('displayDrawer default state is set to false', () => {
-    const SApp = shallow(<App />);
-    expect(SApp.state().displayDrawer).toEqual(false);
-  });
-  it('handleDisplayDrawer works as intended', () => {
-    const SApp = shallow(<App />);
-    SApp.instance().handleDisplayDrawer();
-    expect(SApp.state().displayDrawer).toEqual(true);
-  });
-  it('handleHideDrawer works as intended', () => {
-    const SApp = shallow(<App />);
-    SApp.instance().handleDisplayDrawer();
-    SApp.instance().handleHideDrawer();
-    expect(SApp.state().displayDrawer).toEqual(false);
+  it('mapStateToProps returns correct object', () => {
+    let state = {};
+    state.uiReducer = fromJS({
+      isUserLoggedIn: true
+    });
+    let expected = { isLoggedIn: true };
+    expect(mapStateToProps(state)).toEqual(expected);
   });
 });

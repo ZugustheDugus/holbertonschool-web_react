@@ -1,192 +1,95 @@
-import { shallow } from 'enzyme';
-import Notifications from './Notifications.js';
 import React from 'react';
-import {expect, jest, test} from '@jest/globals';
+import Notifications from './Notifications';
+import { shallow, mount } from 'enzyme';
+import { assert } from 'chai';
+import { getLatestNotification } from '../utils/utils';
 import { StyleSheetTestUtils } from 'aphrodite';
 
+global.console.log = jest.fn()
 
+const listNotifications = [
+  { id: 1, type: 'default', value: 'Test 1' },
+  { id: 2, type: 'urgent', value: 'Test 2' },
+  { id: 3, type: 'urgent', html: { __html: getLatestNotification() } },
+];
 
+const sameLN = [
+  { id: 1, type: 'urgent', value: 'should have failed' },
+  { id: 2, type: 'default', value: 'should have failed' },
+  { id: 3, type: 'default', html: { __html: 'should have failed' } },
+];
 
-describe('<Notifications />', () => {
+const biggerLN = [
+  { id: 1, type: 'default', value: 'Test 1' },
+  { id: 2, type: 'urgent', value: 'Test 2' },
+  { id: 3, type: 'urgent', html: { __html: getLatestNotification() } },
+  { id: 4, type: 'default', value: 'Test 4' },
+];
+
+describe('Notifications Renders', () => {
+  const out = jest.spyOn(console, "log");
+
   beforeEach(() => {
     StyleSheetTestUtils.suppressStyleInjection();
   });
+
   afterEach(() => {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
   });
-  let listNotifications = [{
-    value: 'Someone wants to connect!',
-    id: 0,
-    type: 'default',
-    },
-    {
-    value: 'Employer wants to reach out',
-    id: 1,
-    type: 'urgent',
-    },
-    {
-    value: '',
-    id: 2,
-    type: 'urgent',
-    html: {__html: 'This is a string'}
-    }
-  ]
-  it("renders without crashing", () => {
-    shallow(<Notifications />);
-  });
-  it("Notification renders 3 NotificationItems when given list", () => {
-    const notificationsComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
-    expect(notificationsComponent.find('NotificationItem').length).toEqual(3);
-  });
-  it("Notification renders a correct header text", () => {
-    const SComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications}/>);
-    expect(SComponent.find('div p').text()).toEqual('Here is the list of notifications');
-  });
-  it("Notification renders menuItem div", () => {
-    const SComponent = shallow(<Notifications />);
-    expect(SComponent.find('div').first().text()).toEqual('Your notifications');
-  });
-  it("Does not display div.Notifications when display drawer is false", () => {
-    const SComponent = shallow(<Notifications />);
-    expect(SComponent.find('div p').length).toEqual(0);
-  });
-  it("Displays div.Notifications when display drawer is true", () => {
-    const SComponent = shallow(<Notifications displayDrawer={true} />);
-    expect(SComponent.find('div p').length).toEqual(1);
+
+  const notificationsOn = mount(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
+  const notificationsOff = shallow(<Notifications />);
+  const noListNotes = shallow(<Notifications displayDrawer={true} />);
+  const ul = notificationsOn.find('ul');
+  const p = notificationsOn.find('p');
+
+  it('without crashing', () => {
+    assert.equal(notificationsOn.length, 1)
+    assert.equal(notificationsOff.length, 1)
+    assert.equal(noListNotes.length, 1)
   });
 
-});
-
-describe('<Notifications /> when given a list of notifications', () => {
-  beforeEach(() => {
-    StyleSheetTestUtils.suppressStyleInjection();
-  });
-  afterEach(() => {
-    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-  });
-  let listNotifications = [
-    {
-    value: 'Someone wants to connect!',
-    id: 0,
-    type: 'default',
-    },
-    {
-    value: 'Employer wants to reach out',
-    id: 1,
-    type: 'urgent',
-    },
-    {
-    value: '',
-    id: 2,
-    type: 'urgent',
-    html: {__html: 'This is a string'}
-    },
-  ]
-const SComponent = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
-
-  it("Displays div.Notifications when display drawer is true", () => {
-    expect(SComponent.find('NotificationItem').length).toEqual(3);
-  });
-});
-
-describe('<Notifications /> when given a list of notifications and markAsRead function', () => {
-  let listNotifications = [
-    {
-    value: 'Someone wants to connect!',
-    id: 0,
-    type: 'default',
-    },
-    {
-    value: 'Employer wants to reach out',
-    id: 1,
-    type: 'urgent',
-    },
-    {
-    value: '',
-    id: 2,
-    type: 'urgent',
-    html: {__html: 'This is a string'}
-    },
-  ]
-  beforeEach(() => {
-    StyleSheetTestUtils.suppressStyleInjection();
-  });
-  afterEach(() => {
-    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-    jest.restoreAllMocks()
-  });
-});
-
-describe('<Notifications /> updates when given a list bigger than original', () => {
-  beforeEach(() => {
-    StyleSheetTestUtils.suppressStyleInjection();
-  });
-  afterEach(() => {
-    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-    jest.restoreAllMocks()
+  it('menuItem with or without displayDrawer', () => {
+    assert.equal(notificationsOff.find('.menuItem').length, 1);
+    assert.equal(notificationsOn.find('.menuItem').length, 0);
+    assert.equal(noListNotes.find('.menuItem').length, 0);
   });
 
-  it("should not render with list same size", () => {
-    let listNotifications = [
-    {
-      value: 'Someone wants to connect!',
-      id: 0,
-      type: 'default',
-      }
-  ]
-    const SNotifications = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
-    const shouldComponentUpdateSpy = jest.spyOn(Notifications.prototype, 'shouldComponentUpdate');
-    SNotifications.setProps({ listNotifications: listNotifications });
-    expect(shouldComponentUpdateSpy).toHaveBeenCalled();
-    expect(shouldComponentUpdateSpy).toHaveLastReturnedWith(false);
-  });
-  it("should rerender with list bigger", () => {
-    let listNotifications = [
-    {
-      value: 'Someone wants to connect!',
-      id: 0,
-      type: 'default',
-      }
-  ]
-    const SNotifications = shallow(<Notifications displayDrawer={true} listNotifications={listNotifications} />);
-    const shouldComponentUpdateSpy = jest.spyOn(Notifications.prototype, 'shouldComponentUpdate');
-    listNotifications = [
-      {
-        value: 'Someone wants to connect!',
-        id: 0,
-        type: 'default',
-      },
-      {
-        value: 'Resume available!',
-        id: 1,
-        type: 'urgent',
-      }
-    ]
-    SNotifications.setProps({ listNotifications: listNotifications });
-    expect(shouldComponentUpdateSpy).toHaveBeenCalled();
-    expect(shouldComponentUpdateSpy).toHaveLastReturnedWith(true);
-  });
-});
-
-describe('displayDrawer buttons work as intended', () => {
-  beforeEach(() => {
-    StyleSheetTestUtils.suppressStyleInjection();
-  });
-  afterEach(() => {
-    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-    jest.restoreAllMocks();
+  it('Notifications class div when displayDrawer=true, & Not when false', () => {
+    assert.equal(notificationsOn.find('.Notifications').length, 1);
+    assert.equal(notificationsOff.find('.Notifications').length, 0);
+    assert.equal(noListNotes.find('.Notifications').length, 1);
   });
 
-  it('Clicking on Your notifications displays notifications', () => {
-    const handleDisplayDrawer = jest.fn();
-    const SNotifications = shallow(<Notifications handleDisplayDrawer={handleDisplayDrawer} />);
-    SNotifications.find('div').first().simulate('click');
-    expect(handleDisplayDrawer).toHaveBeenCalled();
+  it('ul with li x3', () => {
+    assert.equal(ul.children().length, 3);
   });
-  it('Clicking on Your notifications displays notifications', () => {
-    const handleHideDrawer = jest.fn();
-    const SNotifications = shallow(<Notifications handleHideDrawer={handleHideDrawer} displayDrawer={true} />);
-    SNotifications.find('button').first().simulate('click');
-    expect(handleHideDrawer).toHaveBeenCalled();
-  })
+
+  it('correct p tag', () => {
+    assert.equal(p.text(), 'Here is the list of notifications');
+  });
+
+  it('li items correctly', () => {
+    assert.equal(ul.children().first().render()[0].attribs['data-priority'], 'default');
+    assert.equal(ul.children().first().render()[0].children[0].data, 'Test 1');
+    assert.equal(ul.children().at(1).render()[0].attribs['data-priority'], 'urgent');
+    assert.equal(ul.children().at(1).render()[0].children[0].data, 'Test 2');
+    assert.equal(ul.children().last().props().type, 'urgent');
+    assert.notStrictEqual(ul.children().last().props().html, { __html: getLatestNotification() });
+  });
+
+  it('With displayDrawer & Not listNotifications: ul with 1 li and correct text', () => {
+    assert.equal(noListNotes.find('ul').length, 0);
+    assert.equal(noListNotes.find('p').text(), 'No new notification for now');
+  });
+
+  it('li items run onClick correctly', () => {
+    const render = mount(<ul>{ul.children()}</ul>);
+    render.find('li').first().simulate('click');
+    expect(out).toHaveBeenCalledWith('Notification 1 has been marked as read');
+    render.find('li').at(1).simulate('click');
+    expect(out).toHaveBeenCalledWith('Notification 2 has been marked as read');
+    render.find('li').last().simulate('click');
+    expect(out).toHaveBeenCalledWith('Notification 3 has been marked as read');
+  });
 });

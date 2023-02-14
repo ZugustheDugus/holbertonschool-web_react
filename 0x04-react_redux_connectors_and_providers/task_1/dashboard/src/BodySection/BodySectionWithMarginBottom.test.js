@@ -1,26 +1,28 @@
-import { shallow, mount } from 'enzyme';
 import React from 'react';
-import sinon from 'sinon';
+import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme';
+import BodySection from './BodySection';
 import BodySectionWithMarginBottom from './BodySectionWithMarginBottom';
 import { StyleSheetTestUtils } from 'aphrodite';
 
+StyleSheetTestUtils.suppressStyleInjection();
 
-describe('<BodySection />', () => {
-  beforeEach(() => {
-    StyleSheetTestUtils.suppressStyleInjection();
+describe('BodySectionWithMarginBottom', () => {
+  it('BodySectionWithMarginBottom renders without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<BodySectionWithMarginBottom title="test title" />, div);
+    ReactDOM.unmountComponentAtNode(div);
   });
-  afterEach(() => {
-    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-  });
-  it("renders BodySectionWithMarginBottom", () => {
-    shallow(<BodySectionWithMarginBottom title='' />);
-  });
-  it("renders BodySectionWithMarginBottom and BodySection child", () => {
-    const sBodySection = shallow(<BodySectionWithMarginBottom title='This is the title' />);
-    expect(sBodySection.find('BodySection').length).toEqual(1);
-  });
-  it("renders BodySectionWithMarginBottom with correct props passed down", () => {
-    const sBodySection = shallow(<BodySectionWithMarginBottom title='This is the title' />);
-    expect(sBodySection.find('BodySection').props().title).toEqual('This is the title');
+
+  it('BodySectionWithMarginBottom rendered with the default title and children', () => {
+    const wrapper = shallow(
+      <BodySectionWithMarginBottom title="test title">
+        <p>test children node</p>
+      </BodySectionWithMarginBottom>
+    );
+    const element = wrapper.find(BodySection);
+    const child = wrapper.find('p');
+    expect(element.length).toBe(1);
+    expect(child.text()).toBe('test children node');
   });
 });
